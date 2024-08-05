@@ -12,7 +12,7 @@ function SideMenu() {
   const [ isOpen, setIsOpen ] = useState(false);
 
   return (
-    <div className="sticky left-0 top-0 h-screen w-full md:w-72  flex flex-col justify-between items-center md:items-stretch p-5 border-r ">
+    <div className="sticky left-0 top-0 md:h-screen w-full md:w-80  flex flex-col justify-between items-center md:items-stretch p-5 border-r space-y-7 bg-slate-400/40 z-20 backdrop-blur-lg md:bg-white">
       <div className="relative w-full">
         <div className="flex  items-baseline">
           <img src={logo} alt="logo" width={25} />
@@ -67,7 +67,7 @@ function SideMenu() {
           </li>
         </ul>
       </nav>
-      <div className="flex items-center space-x-5">
+      <div  className={` items-center space-x-5 ${isOpen? "flex": "hidden"} md:flex`}>
         <Link
           to="/signup"
           className="bg-rose-500 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-3"

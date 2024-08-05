@@ -119,15 +119,13 @@ function SignUp() {
                     htmlFor="PasswordConfirmation"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Password Confirmation
+                    Purpose
                   </label>
-
-                  <input
-                    type="password"
-                    id="PasswordConfirmation"
-                    name="password_confirmation"
-                    className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-                  />
+                  <select name="admin" id="admin">
+                    <option value={false}>Customer</option>
+                    <option value={true}>Seller</option>
+                  </select>
+                  
                 </div>
 
                 <div className="col-span-6">
