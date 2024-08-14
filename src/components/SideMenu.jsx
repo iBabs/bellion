@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { IoHeartOutline, IoHomeOutline } from "react-icons/io5";
 import logo from "../assets/logo.svg";
@@ -7,9 +7,15 @@ import { IoOpenOutline, IoCartOutline } from "react-icons/io5";
 import { AiOutlineProduct } from "react-icons/ai";
 import { CiMenuFries } from "react-icons/ci";
 import { MdCancel } from "react-icons/md";
+import { AuthContext } from "../context/AppContext";
 
 function SideMenu() {
-  const [ isOpen, setIsOpen ] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const {
+    user: { user }, dispatch
+  } = useContext(AuthContext);
+  console.log(user);
 
   return (
     <div className="sticky left-0 top-0 md:h-screen w-full md:w-80  flex flex-col justify-between items-center md:items-stretch p-5 border-r space-y-7 bg-slate-400/40 z-20 backdrop-blur-lg md:bg-white">
@@ -19,15 +25,17 @@ function SideMenu() {
           <h2 className="text-rose-500 text-2xl font-bold font-brand">
             Bellion
           </h2>
-            <button className="md:hidden border border-rose-500 rounded-lg p-2 text-rose-500 text-xl absolute right-1 top-1"
-            onClick={()=>{setIsOpen(!isOpen)}}
-            >
-                {isOpen ? <MdCancel /> : <CiMenuFries />}
-            </button>
-
+          <button
+            className="md:hidden border border-rose-500 rounded-lg p-2 text-rose-500 text-xl absolute right-1 top-1"
+            onClick={() => {
+              setIsOpen(!isOpen);
+            }}
+          >
+            {isOpen ? <MdCancel /> : <CiMenuFries />}
+          </button>
         </div>
       </div>
-      <nav className={`w-full ${isOpen? "block": "hidden"} md:block`}>
+      <nav className={`w-full ${isOpen ? "block" : "hidden"} md:block`}>
         <ul>
           <li>
             <NavLink
@@ -67,21 +75,43 @@ function SideMenu() {
           </li>
         </ul>
       </nav>
-      <div  className={` items-center space-x-5 ${isOpen? "flex": "hidden"} md:flex`}>
-        <Link
-          to="/signup"
-          className="bg-rose-500 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-3"
+      {user ? (
+        <div>
+          <p>{user.email}</p>
+          <button
+          className="border border-rose-500 rounded-xl p-2 text-rose-500"
+          onClick={()=>{
+            const leave = window.confirm("You sure say you wan komot?")
+            if(leave){
+              dispatch({type: "LOGOUT"})
+              localStorage.removeItem("user")
+            }
+          }}
+          >
+              Komot
+          </button>
+        </div>
+      ) : (
+        <div
+          className={` items-center space-x-5 ${
+            isOpen ? "flex" : "hidden"
+          } md:flex`}
         >
-          {" "}
-          Sign Up <IoOpenOutline />
-        </Link>
-        <Link
-          to="/login"
-          className=" text-rose-500 border border-rose-500 px-4 py-2 rounded-lg flex items-center justify-center space-x-3"
-        >
-          Log In <CiLogin />
-        </Link>
-      </div>
+          <Link
+            to="/signup"
+            className="bg-rose-500 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-3"
+          >
+            {" "}
+            Sign Up <IoOpenOutline />
+          </Link>
+          <Link
+            to="/login"
+            className=" text-rose-500 border border-rose-500 px-4 py-2 rounded-lg flex items-center justify-center space-x-3"
+          >
+            Log In <CiLogin />
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

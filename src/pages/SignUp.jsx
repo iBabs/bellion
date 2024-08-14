@@ -1,7 +1,54 @@
 import { Link } from "react-router-dom";
-import shop from '../assets/pexels-didsss-2983364.jpg'
+import shop from "../assets/pexels-didsss-2983364.jpg";
+import axios from "axios";
+import { useState, useContext} from "react";
+import { AuthContext } from "../context/AppContext";
+import { AiOutlineLoading } from "react-icons/ai";
+// import { set } from "mongoose";
 
 function SignUp() {
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    isAdmin: false,
+  });
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { dispatch } = useContext(AuthContext);
+
+  const hadleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: name === "isAdmin" ? value === "true" : value, });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await axios.post("http://localhost:8000/user/register", {
+        ...formData,
+        
+      });
+
+      setError(null);
+      dispatch({ type: "LOGIN", payload: response.data });
+      localStorage.setItem("user", JSON.stringify(response.data));
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setError(error.response.data.message);
+    }
+  };
+  // useEffect(()=>{
+  //   console.log(formData)
+  // }, [formData])
+
+  const { first_name, last_name, email, password, isAdmin } = formData;
+
   return (
     <div>
       {/*
@@ -47,7 +94,11 @@ function SignUp() {
                 Eligendi nam dolorum aliquam, quibusdam aperiam voluptatum.
               </p>
 
-              <form action="#" className="mt-8 grid grid-cols-6 gap-6">
+              <form
+                action="#"
+                className="mt-8 grid grid-cols-6 gap-6"
+                onSubmit={handleSubmit}
+              >
                 <div className="col-span-6 sm:col-span-3">
                   <label
                     htmlFor="FirstName"
@@ -61,6 +112,8 @@ function SignUp() {
                     id="FirstName"
                     name="first_name"
                     className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                    onChange={hadleChange}
+                    value={first_name}
                   />
                 </div>
 
@@ -77,6 +130,8 @@ function SignUp() {
                     id="LastName"
                     name="last_name"
                     className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                    onChange={hadleChange}
+                    value={last_name}
                   />
                 </div>
 
@@ -94,6 +149,8 @@ function SignUp() {
                     id="Email"
                     name="email"
                     className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                    onChange={hadleChange}
+                    value={email}
                   />
                 </div>
 
@@ -111,6 +168,8 @@ function SignUp() {
                     id="Password"
                     name="password"
                     className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                    onChange={hadleChange}
+                    value={password}
                   />
                 </div>
 
@@ -121,11 +180,15 @@ function SignUp() {
                   >
                     Purpose
                   </label>
-                  <select name="admin" id="admin">
+                  <select
+                    name="isAdmin"
+                    id="isAdmin"
+                    value={isAdmin}
+                    onChange={hadleChange}
+                  >
                     <option value={false}>Customer</option>
                     <option value={true}>Seller</option>
                   </select>
-                  
                 </div>
 
                 <div className="col-span-6">
@@ -161,17 +224,27 @@ function SignUp() {
 
                 <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
                   <button className="inline-block shrink-0 rounded-md border border-rose-500 bg-rose-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500">
-                    Create an account
+                    {loading ? (
+                      <AiOutlineLoading className="animate-spin" />
+                    ) : (
+                      "Create an account"
+                    )}
                   </button>
 
                   <p className="mt-4 text-sm text-gray-500 sm:mt-0">
                     Already have an account?
-                    <Link to='/login' className="text-gray-700 underline">
+                    <Link to="/login" className="text-gray-700 underline">
                       Log in
                     </Link>
                     .
                   </p>
+                  <div></div>
                 </div>
+                {error && (
+                  <p className="text-red-500 p-5 border border-red-500 bg-red-200 col-span-6">
+                    {error}
+                  </p>
+                )}
               </form>
             </div>
           </main>
